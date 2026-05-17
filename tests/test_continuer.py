@@ -119,16 +119,23 @@ def test_default_embedder_empty_input() -> None:
     assert mat.shape == (0, 1024)
 
 
-# ─── Hypothesis property tests (5 invariants) ─────────────────────
+def test_duplicate_memory_ids_raise() -> None:
+    # PAM accepts duplicate ids in `memories` list; ExitKit rejects them so a
+    # silent collapse cannot produce a phantom `mutated` set.
+    s = _store([_mem("a", "x"), _mem("a", "y")])
+    other = _store([_mem("a", "x")])
+    with pytest.raises(ValueError, match="duplicate memory id"):
+        continuity_score(s, other)
+
+
+# ─── Hypothesis property tests (5 invariants + 1 mutation focus) ──
 
 
 @st.composite
 def stores_strategy(draw: st.DrawFn, *, max_size: int = 6) -> MemoryStore:
     n = draw(st.integers(min_value=0, max_value=max_size))
     id_pool = [f"m{i}" for i in range(max_size)]
-    chosen_ids = draw(
-        st.lists(st.sampled_from(id_pool), min_size=n, max_size=n, unique=True)
-    )
+    chosen_ids = draw(st.lists(st.sampled_from(id_pool), min_size=n, max_size=n, unique=True))
     memories = [
         _mem(
             mid,
@@ -183,3 +190,50 @@ def test_invariant_continuity_symmetric(s1: MemoryStore, s2: MemoryStore) -> Non
     r12 = continuity_score(s1, s2)
     r21 = continuity_score(s2, s1)
     assert r12.continuity == pytest.approx(r21.continuity)
+
+
+# ─── Focused mutation strategy (covers the `mutated` branch) ──────
+
+
+@st.composite
+def mutation_pair_strategy(
+    draw: st.DrawFn, *, max_size: int = 5
+) -> tuple[MemoryStore, MemoryStore]:
+    """Generate (before, after) pairs that share all ids but flip a non-empty subset of contents."""
+    n = draw(st.integers(min_value=1, max_value=max_size))
+    ids = [f"k{i}" for i in range(n)]
+    before_contents = draw(
+        st.lists(
+            st.text(
+                alphabet=st.characters(min_codepoint=97, max_codepoint=122),
+                min_size=1,
+                max_size=16,
+            ),
+            min_size=n,
+            max_size=n,
+        )
+    )
+    flip_mask = draw(st.lists(st.booleans(), min_size=n, max_size=n).filter(any))
+    after_contents = [
+        c + "X" if flip else c for c, flip in zip(before_contents, flip_mask, strict=True)
+    ]
+    before = _store([_mem(mid, c) for mid, c in zip(ids, before_contents, strict=True)])
+    after = _store([_mem(mid, c) for mid, c in zip(ids, after_contents, strict=True)])
+    return before, after
+
+
+@given(mutation_pair_strategy())
+@settings(max_examples=40, deadline=None)
+def test_mutated_set_matches_flipped_ids(pair: tuple[MemoryStore, MemoryStore]) -> None:
+    before, after = pair
+    expected_mutated = {
+        b.id
+        for b, a in zip(before.memories, after.memories, strict=True)
+        if b.content_hash != a.content_hash
+    }
+    report = continuity_score(before, after)
+    assert report.mutated == frozenset(expected_mutated)
+    assert report.added == frozenset()
+    assert report.removed == frozenset()
+    if expected_mutated:
+        assert report.continuity < 1.0

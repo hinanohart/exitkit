@@ -18,6 +18,14 @@ The framing follows Nozick's closest-continuer schema (Philosophical
 Explanations, 1981, §1): the post-update snapshot counts as the continuer
 iff its continuity score is the highest among candidates and exceeds a
 caller-chosen threshold.
+
+Note on the ``semantic_drift`` range. With the default
+:func:`exitkit.embed.hashing_embedder` — a non-negative bag-of-words
+projection — every pair of non-empty stores yields a cosine in
+``[0, 1]``, so ``semantic_drift`` is bounded by ``[0, 0.5]``. Embedders
+that can produce negative cosines (e.g. sentence-transformers) cover the
+full ``[0, 1]`` range. The endpoints ``0.0`` (both stores empty) and
+``1.0`` (exactly one store empty) remain reachable under any embedder.
 """
 
 from __future__ import annotations
@@ -53,7 +61,15 @@ class DriftReport:
 
 
 def _index(store: MemoryStore) -> dict[str, str]:
-    return {mem.id: mem.content_hash for mem in store.memories}
+    idx: dict[str, str] = {}
+    for mem in store.memories:
+        if mem.id in idx:
+            raise ValueError(
+                f"duplicate memory id {mem.id!r} in MemoryStore; "
+                "the continuity metric requires unique ids"
+            )
+        idx[mem.id] = mem.content_hash
+    return idx
 
 
 def _identity_diff(
@@ -96,7 +112,7 @@ def _semantic_drift(
         return 1.0
     cosine = float(np.dot(centroid_before, centroid_after) / (nb * na))
     cosine = max(-1.0, min(1.0, cosine))
-    return 1.0 - (cosine + 1.0) / 2.0
+    return (1.0 - cosine) / 2.0
 
 
 def continuity_score(

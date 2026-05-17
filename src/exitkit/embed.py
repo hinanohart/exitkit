@@ -4,6 +4,11 @@ Pure-numpy hashing-trick bag-of-words. Reproducible across runs and
 platforms because blake2b is deterministic. Replace with sentence-
 transformers or any other model by passing ``embedder=...`` to
 :func:`exitkit.continuity_score`.
+
+Tokenisation is the unicode regex ``\\w+`` lower-cased. Content that
+contains only punctuation, whitespace, or emoji collapses to zero
+tokens, producing a zero-row embedding. Pair such content with a richer
+custom embedder if those signals matter.
 """
 
 from __future__ import annotations

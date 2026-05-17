@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "exitkit"
-version = "0.1.0"
+version = "0.1.1"
 description = "Nozickian closest-continuer metric for portable agent memory: measure identity and semantic drift across PAM snapshots."
 readme = "README.md"
 license = "Apache-2.0"
@@ -62,6 +62,7 @@ include = [
     "tests",
     "examples",
     "README.md",
+    "CHANGELOG.md",
     "LICENSE",
     "CONTRIBUTING.md",
     "CODE_OF_CONDUCT.md",
