@@ -1,0 +1,97 @@
+[build-system]
+requires = ["hatchling>=1.21"]
+build-backend = "hatchling.build"
+
+[project]
+name = "exitkit"
+version = "0.1.0"
+description = "Nozickian closest-continuer metric for portable agent memory: measure identity and semantic drift across PAM snapshots."
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.11"
+authors = [
+    { name = "ExitKit Contributors" },
+]
+keywords = [
+    "ai",
+    "alignment",
+    "agent-memory",
+    "pam",
+    "tracking-truth",
+    "nozick",
+    "closest-continuer",
+    "drift-detection",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
+]
+dependencies = [
+    "portable-ai-memory>=1.0,<2",
+    "numpy>=1.26,<3",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "pytest-cov>=5",
+    "hypothesis>=6.100",
+    "ruff>=0.5",
+    "mypy>=1.10",
+]
+
+[project.urls]
+Homepage = "https://github.com/hinanohart/exitkit"
+Repository = "https://github.com/hinanohart/exitkit"
+Issues = "https://github.com/hinanohart/exitkit/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/exitkit"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/exitkit",
+    "tests",
+    "examples",
+    "README.md",
+    "LICENSE",
+    "CONTRIBUTING.md",
+    "CODE_OF_CONDUCT.md",
+    "SECURITY.md",
+    "pyproject.toml",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests", "examples"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "RUF"]
+ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["B", "RUF"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_return_any = true
+warn_unreachable = true
+files = ["src/exitkit"]
+
+[[tool.mypy.overrides]]
+module = ["portable_ai_memory.*", "hypothesis.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
