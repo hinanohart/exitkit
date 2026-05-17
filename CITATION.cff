@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "Nozickian closest-continuer metric for portable agent memory — drift detection over PAM snapshots"
+authors:
+  - family-names: "Hart"
+    given-names: "Hinano"
+    alias: "hinanohart"
+type: software
+license: "NOASSERTION"
+repository-code: "https://github.com/hinanohart/exitkit"
+url: "https://github.com/hinanohart/exitkit"
+version: "0.1.1"
+date-released: "2026-05-17"
+keywords:
+  - "agent-memory"
+  - "ai"
+  - "ai-alignment"
+  - "drift-detection"
+  - "nozick"
+  - "pam"
+  - "python"
+  - "closest-continuer"
+  - "tracking-truth"
