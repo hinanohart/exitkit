@@ -4,7 +4,7 @@
 > Given two [PAM](https://github.com/portable-ai-memory) snapshots of an agent (before and after a fine-tune, migration, or personalisation pass), ExitKit returns a continuity score in `[0, 1]` and a structured drift report — so you can answer *"is it still the same agent?"* with a number instead of vibes.
 
 [![CI](https://github.com/hinanohart/exitkit/actions/workflows/ci.yml/badge.svg)](https://github.com/hinanohart/exitkit/actions/workflows/ci.yml)
-[![Apache 2.0](https://img.shields.io/badge/license-Apache_2.0-blue.svg)](LICENSE)
+[![MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](#installation)
 
 ## Why
