@@ -7,7 +7,7 @@ name = "exitkit"
 version = "0.1.1"
 description = "Nozickian closest-continuer metric for portable agent memory: measure identity and semantic drift across PAM snapshots."
 readme = "README.md"
-license = "Apache-2.0"
+license = "MIT"
 requires-python = ">=3.11"
 authors = [
     { name = "ExitKit Contributors" },
