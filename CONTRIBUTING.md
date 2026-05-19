@@ -25,4 +25,4 @@ ExitKit v0.1 is the single *continuer-select* component. Proposals to bundle a U
 
 ## License
 
-By submitting a contribution you agree it will be licensed under the project's [Apache 2.0 License](LICENSE).
+By submitting a contribution you agree it will be licensed under the project's [MIT License](LICENSE).
