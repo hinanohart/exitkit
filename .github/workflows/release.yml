@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: MIT
-# Release workflow: build → Sigstore Cosign keyless attest → PyPI trusted publish
+# Release workflow: build → Sigstore Cosign keyless attest → PyPI token publish
 # Triggered on v* tag push (e.g. v0.2.0rc1, v0.2.0).
-# Requires PyPI trusted publisher configured at pypi.org for this repo/workflow.
+# Uses PYPI_API_TOKEN secret (set in repo Settings > Secrets > Actions).
 
 name: Release
 
@@ -12,7 +12,7 @@ on:
 
 permissions:
   contents: write   # create GitHub release
-  id-token: write   # OIDC for PyPI trusted publish + Sigstore keyless
+  id-token: write   # OIDC for Sigstore keyless
 
 jobs:
   build:
@@ -73,9 +73,6 @@ jobs:
     name: Publish to PyPI
     needs: sign
     runs-on: ubuntu-latest
-    environment:
-      name: pypi
-      url: https://pypi.org/p/exitkit
     steps:
       - name: Download signed dist
         uses: actions/download-artifact@v4
@@ -83,10 +80,11 @@ jobs:
           name: dist-signed
           path: dist/
 
-      - name: Publish to PyPI (trusted publish / OIDC)
+      - name: Publish to PyPI (token auth)
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          # Trusted publisher configured at pypi.org — no token needed.
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
           skip-existing: false
 
   github-release:
