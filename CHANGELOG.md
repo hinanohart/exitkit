@@ -6,6 +6,23 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.2.0rc1] — 2026-05-21
+
+### Added
+
+- **Cedar 4.8 audit policy layer** (`exitkit.cedar_loader`): `load_policy_set`,
+  `validate`, `Decision`, `PolicyLoadError`, `UnknownActionError`.
+  Governs `read`/`write`/`decay` actions on `PAMSnapshot` and `ContinuerScore`
+  resources by `AuditedRole` principals.
+- `cedar/policies.cedar`: canonical Cedar 4.8 policy file bundled with the
+  package (included in both wheel and sdist).
+- Optional dependency group `cedar` (`pip install exitkit[cedar]`) pulls in
+  `cedarpy>=0.3`.
+- 27 new tests in `tests/test_cedar_loader.py` covering allow/deny/unknown-action/
+  import-error/OSError paths.
+- `.github/workflows/release.yml`: Sigstore Cosign keyless attestation +
+  PyPI trusted publish via OIDC on `v*` tag push.
+
 ### Changed
 - Relicense from Apache-2.0 to MIT for portfolio alignment.
 
