@@ -117,6 +117,25 @@ mypy
 - Robert Nozick. *Philosophical Explanations.* Harvard University Press, 1981 — §1 Tracking Truth and §1 closest-continuer.
 - Ruben Laukkonen, Seb Krier, Chloé Bakalar et al. *Positive Alignment: Artificial Intelligence for Human Flourishing.* arXiv:2605.10310 (2026).
 
+## Audit-trail integration (memcanon)
+
+[`memcanon`](https://github.com/hinanohart/memcanon) v0.2+ accepts events
+from this repo via a thin in-process shim and content-hashes them into a
+local audit store:
+
+```python
+from memcanon.emit import emit
+from memcanon.store.local import LocalStore
+
+with LocalStore("audit") as store:
+    emit("exitkit", {"kind": "...", "decision": "..."}, store=store)
+```
+
+Each record is tagged `source:exitkit` + `schema:memcanon-emit/1`. Memcanon's
+`memcanon export --format eu-ai-act-12 --to OUT.json` can then build an
+Article 12(2) paragraph-mapped audit-log artefact (SHAPE only, NOT a
+conformity assessment).
+
 ## License
 
 MIT License — see [LICENSE](LICENSE).
